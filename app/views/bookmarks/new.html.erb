@@ -1,2 +1,8 @@
-<h1>Bookmarks#new</h1>
-<p>Find me in app/views/bookmarks/new.html.erb</p>
+<div class="container my-3 px-5">
+  <h2>Add a movie</h2>
+  <%= simple_form_for [@list, @bookmark] do |f| %>
+    <%= f.input :comment, placeholder: 'Add a comment' %>
+    <%= f.association :movie, selected: 'The Shawshank Redemption' %>
+    <%= f.button :submit, class: "btn btn-flat" %>
+  <% end %>
+</div>

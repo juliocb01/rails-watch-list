@@ -6,25 +6,19 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 
-require 'faker'
-
-5.times do
-  name = Faker::Movie.quote
-  List.create(name: name)
-end
-
-require 'net/http'
-require 'json'
-
-response = Net::HTTP.get(URI('https://tmdb.lewagon.com/movie/top_rated'))
-api_hash = JSON.parse(response)
-results = api_hash['results']
-
-results.each do |movie|
-  Movie.create(
-    title: movie['title'],
-    overview: movie['overview'],
-    poster_url: "https://image.tmdb.org/t/p/original/#{movie['poster_path']}",
-    rating: movie['vote_average']
-  )
+URI.open("http://tmdb.lewagon.com/movie/top_rated") do |lines|
+  lines.each_line do |line|
+    results = JSON.parse(line)
+    results["results"].each do |result|
+      if result["original_language"] == 'en'
+        image = "https://image.tmdb.org/t/p/original#{result["poster_path"]}"
+        Movie.create(
+          title: result["title"],
+          rating: result["vote_average"],
+          overview: result["overview"],
+          poster_url: image
+        )
+      end
+    end
+  end
 end
